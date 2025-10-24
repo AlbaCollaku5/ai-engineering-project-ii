@@ -1,3 +1,8 @@
+<<<<<<< HEAD
+=======
+# ai-engineering-project-ii
+
+>>>>>>> becb600a378acfa330ac5ee2ffcf0f286bf4c001
 # ai-engineering-part-ii
 This repository contains the Project 1 baseline and new scaffolding for Project 2: AI Orchestrator & Monitoring Platform.
 
