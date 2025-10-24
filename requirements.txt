@@ -1,0 +1,40 @@
+# Core dependencies
+fastapi>=0.104.1
+uvicorn[standard]>=0.24.0
+pydantic>=2.5.0
+httpx>=0.25.2
+PyYAML>=6.0.1
+
+# Vector database and embeddings
+chromadb>=0.4.15
+sentence-transformers>=2.2.2
+
+# LangChain ecosystem (fixed versions for compatibility)
+langchain==0.0.325
+langchain-text-splitters==0.0.1
+langchain-community==0.0.10
+langchain-openai==0.0.5
+langchain-core==0.0.10
+langchain-huggingface>=1.0.0
+langchain-chroma>=1.0.0
+
+# Additional dependencies that might be needed
+numpy>=1.21.0
+torch>=1.9.0
+transformers>=4.21.0
+tokenizers>=0.13.0
+scikit-learn>=1.0.0
+scipy>=1.7.0
+
+# Advanced Monitoring & Evaluation
+evidently>=0.7.15
+psycopg2-binary>=2.9.11
+streamlit>=1.50.0
+plotly>=6.3.1
+pandas>=2.3.3
+
+# Fine-Tuning & PEFT
+peft>=0.17.1
+datasets>=4.3.0
+accelerate>=1.11.0
+bitsandbytes>=0.48.1

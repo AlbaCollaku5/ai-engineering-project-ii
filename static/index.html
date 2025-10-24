@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Knowledge Assistant</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            opacity: 0.9;
+            font-size: 1.1em;
+        }
+        
+        .content {
+            padding: 30px;
+        }
+        
+        .section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #e1e5e9;
+            border-radius: 8px;
+            background: #f8f9fa;
+        }
+        
+        .section h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #555;
+        }
+        
+        input, textarea, button {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            transition: transform 0.2s;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+        }
+        
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .response {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 6px;
+            border-left: 4px solid #667eea;
+            white-space: pre-wrap;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 14px;
+        }
+        
+        .loading {
+            text-align: center;
+            color: #667eea;
+            font-style: italic;
+        }
+        
+        .error {
+            border-left-color: #e74c3c;
+            background: #fdf2f2;
+            color: #c53030;
+        }
+        
+        .success {
+            border-left-color: #10b981;
+            background: #f0fdf4;
+            color: #065f46;
+        }
+        
+        .status {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        
+        .status.rag { background: #dbeafe; color: #1e40af; }
+        .status.web { background: #fef3c7; color: #92400e; }
+        .status.rag-fixed { background: #dcfce7; color: #166534; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🧠 AI Knowledge Assistant</h1>
+            <p>Upload documents and query your knowledge base with AI-powered responses</p>
+        </div>
+        
+        <div class="content">
+            <!-- Document Upload Section -->
+            <div class="section">
+                <h3>📄 Upload Documents</h3>
+                <div class="form-group">
+                    <label for="documents">Documents (one per line):</label>
+                    <textarea id="documents" rows="4" placeholder="Enter your documents here, one per line..."></textarea>
+                </div>
+                <button onclick="uploadDocuments()" id="uploadBtn">Upload Documents</button>
+                <div id="uploadResponse" class="response" style="display: none;"></div>
+            </div>
+            
+            <!-- Query Section -->
+            <div class="section">
+                <h3>❓ Query Knowledge Base</h3>
+                <div class="form-group">
+                    <label for="query">Your Question:</label>
+                    <input type="text" id="query" placeholder="What would you like to know?">
+                </div>
+                <button onclick="queryKnowledge()" id="queryBtn">Ask Question</button>
+                <div id="queryResponse" class="response" style="display: none;"></div>
+            </div>
+            
+            <!-- RAG Query Section -->
+            <div class="section">
+                <h3>🔍 Direct RAG Query</h3>
+                <div class="form-group">
+                    <label for="ragQuery">RAG Query:</label>
+                    <input type="text" id="ragQuery" placeholder="Query using RAG pipeline directly...">
+                </div>
+                <button onclick="ragQuery()" id="ragBtn">RAG Query</button>
+                <div id="ragResponse" class="response" style="display: none;"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:8000';
+        
+        async function uploadDocuments() {
+            const documents = document.getElementById('documents').value;
+            const btn = document.getElementById('uploadBtn');
+            const responseDiv = document.getElementById('uploadResponse');
+            
+            if (!documents.trim()) {
+                showResponse(responseDiv, 'Please enter some documents to upload.', 'error');
+                return;
+            }
+            
+            btn.disabled = true;
+            btn.textContent = 'Uploading...';
+            showResponse(responseDiv, 'Uploading documents...', 'loading');
+            
+            try {
+                const docArray = documents.split('\n').filter(doc => doc.trim());
+                const response = await fetch(`${API_BASE}/documents`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ documents: docArray })
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    showResponse(responseDiv, `✅ Success! ${result.count} documents uploaded and indexed.`, 'success');
+                } else {
+                    showResponse(responseDiv, `❌ Error: ${result.detail || 'Upload failed'}`, 'error');
+                }
+            } catch (error) {
+                showResponse(responseDiv, `❌ Network Error: ${error.message}`, 'error');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Upload Documents';
+            }
+        }
+        
+        async function queryKnowledge() {
+            const query = document.getElementById('query').value;
+            const btn = document.getElementById('queryBtn');
+            const responseDiv = document.getElementById('queryResponse');
+            
+            if (!query.trim()) {
+                showResponse(responseDiv, 'Please enter a question.', 'error');
+                return;
+            }
+            
+            btn.disabled = true;
+            btn.textContent = 'Thinking...';
+            showResponse(responseDiv, 'Processing your question...', 'loading');
+            
+            try {
+                const response = await fetch(`${API_BASE}/query?q=${encodeURIComponent(query)}`);
+                const result = await response.json();
+                
+                if (response.ok) {
+                    const statusClass = result.source === 'rag' ? 'rag' : 'web';
+                    const statusText = result.source === 'rag' ? 'RAG' : 'Web Search';
+                    const confidence = (result.confidence * 100).toFixed(1);
+                    
+                    showResponse(responseDiv, 
+                        `Question: ${result.query}\n\n` +
+                        `Answer: ${result.answer}\n\n` +
+                        `Source: ${statusText} | Confidence: ${confidence}%`, 
+                        'success'
+                    );
+                } else {
+                    showResponse(responseDiv, `❌ Error: ${result.detail || 'Query failed'}`, 'error');
+                }
+            } catch (error) {
+                showResponse(responseDiv, `❌ Network Error: ${error.message}`, 'error');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Ask Question';
+            }
+        }
+        
+        async function ragQuery() {
+            const query = document.getElementById('ragQuery').value;
+            const btn = document.getElementById('ragBtn');
+            const responseDiv = document.getElementById('ragResponse');
+            
+            if (!query.trim()) {
+                showResponse(responseDiv, 'Please enter a RAG query.', 'error');
+                return;
+            }
+            
+            btn.disabled = true;
+            btn.textContent = 'Processing...';
+            showResponse(responseDiv, 'Processing RAG query...', 'loading');
+            
+            try {
+                const response = await fetch(`${API_BASE}/rag-query?q=${encodeURIComponent(query)}`);
+                const result = await response.json();
+                
+                if (response.ok) {
+                    const confidence = (result.confidence * 100).toFixed(1);
+                    const method = result.method || 'unknown';
+                    
+                    showResponse(responseDiv, 
+                        `Query: ${result.query}\n\n` +
+                        `Answer: ${result.answer}\n\n` +
+                        `Method: ${method} | Confidence: ${confidence}%\n\n` +
+                        `Source Documents:\n${JSON.stringify(result.source_documents, null, 2)}`, 
+                        'success'
+                    );
+                } else {
+                    showResponse(responseDiv, `❌ Error: ${result.detail || 'RAG query failed'}`, 'error');
+                }
+            } catch (error) {
+                showResponse(responseDiv, `❌ Network Error: ${error.message}`, 'error');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'RAG Query';
+            }
+        }
+        
+        function showResponse(element, message, type) {
+            element.textContent = message;
+            element.className = `response ${type}`;
+            element.style.display = 'block';
+        }
+        
+        // Check API health on load
+        window.addEventListener('load', async () => {
+            try {
+                const response = await fetch(`${API_BASE}/health`);
+                if (response.ok) {
+                    console.log('✅ API is healthy');
+                } else {
+                    console.warn('⚠️ API health check failed');
+                }
+            } catch (error) {
+                console.error('❌ Cannot connect to API:', error.message);
+            }
+        });
+    </script>
+</body>
+</html>
+

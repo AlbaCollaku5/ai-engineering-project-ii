@@ -1,0 +1,22 @@
+---
+- name: summarize_v1
+  version: 1
+  description: "Short extractive summarization for long answers"
+  template: |
+    Summarize the following text in 3 concise bullet points:
+    {text}
+
+- name: translate_v1
+  version: 1
+  description: "Translate to target language preserving tone"
+  template: |
+    Translate the following text to {language} without changing tone:
+    {text}
+
+- name: qa_v1
+  version: 1
+  description: "Answer the question based on provided context and cite sources"
+  template: |
+    Use the context below to answer the question. If answer is not in the context say 'I don't know'.
+    Context: {context}
+    Question: {question}

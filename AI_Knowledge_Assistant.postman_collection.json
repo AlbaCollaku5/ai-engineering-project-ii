@@ -1,0 +1,259 @@
+{
+	"info": {
+		"_postman_id": "ai-knowledge-assistant-collection",
+		"name": "AI Knowledge Assistant API",
+		"description": "Collection for testing the AI Knowledge Assistant RAG system",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Upload Documents",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"documents\": [\n    \"Machine learning is a subset of artificial intelligence that focuses on algorithms that can learn from data.\",\n    \"Natural language processing (NLP) is a branch of AI that helps computers understand, interpret and manipulate human language.\",\n    \"Python is a high-level programming language known for its simplicity and readability.\",\n    \"FastAPI is a modern, fast web framework for building APIs with Python 3.7+ based on standard Python type hints.\"\n  ]\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/documents",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"documents"
+					]
+				},
+				"description": "Upload and index documents for the knowledge base"
+			},
+			"response": []
+		},
+		{
+			"name": "Query - High Confidence (RAG)",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/query?q=What is machine learning?",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"query"
+					],
+					"query": [
+						{
+							"key": "q",
+							"value": "What is machine learning?"
+						}
+					]
+				},
+				"description": "Query that should have high confidence and use RAG"
+			},
+			"response": []
+		},
+		{
+			"name": "Query - Low Confidence (Web Search)",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/query?q=What is quantum computing?",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"query"
+					],
+					"query": [
+						{
+							"key": "q",
+							"value": "What is quantum computing?"
+						}
+					]
+				},
+				"description": "Query that should have low confidence and trigger web search"
+			},
+			"response": []
+		},
+		{
+			"name": "Query - Python Related",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/query?q=Tell me about Python programming",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"query"
+					],
+					"query": [
+						{
+							"key": "q",
+							"value": "Tell me about Python programming"
+						}
+					]
+				},
+				"description": "Query about Python programming"
+			},
+			"response": []
+		},
+		{
+			"name": "Query - NLP Related",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/query?q=What is natural language processing?",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"query"
+					],
+					"query": [
+						{
+							"key": "q",
+							"value": "What is natural language processing?"
+						}
+					]
+				},
+				"description": "Query about natural language processing"
+			},
+			"response": []
+		},
+		{
+			"name": "Query - FastAPI Related",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/query?q=What is FastAPI?",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"query"
+					],
+					"query": [
+						{
+							"key": "q",
+							"value": "What is FastAPI?"
+						}
+					]
+				},
+				"description": "Query about FastAPI framework"
+			},
+			"response": []
+		},
+		{
+			"name": "Upload More Documents",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"documents\": [\n    \"Docker is a containerization platform that allows you to package applications and their dependencies into lightweight, portable containers.\",\n    \"Vector databases are specialized databases designed to store and query high-dimensional vectors efficiently.\",\n    \"ChromaDB is an open-source vector database that makes it easy to build AI applications with embeddings.\",\n    \"Retrieval-Augmented Generation (RAG) is a technique that combines information retrieval with text generation to improve the accuracy and relevance of AI responses.\"\n  ]\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/documents",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"documents"
+					]
+				},
+				"description": "Upload additional documents to expand the knowledge base"
+			},
+			"response": []
+		},
+		{
+			"name": "Query - Docker Related",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/query?q=What is Docker?",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"query"
+					],
+					"query": [
+						{
+							"key": "q",
+							"value": "What is Docker?"
+						}
+					]
+				},
+				"description": "Query about Docker containerization"
+			},
+			"response": []
+		},
+		{
+			"name": "Query - RAG Related",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/query?q=What is RAG?",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"query"
+					],
+					"query": [
+						{
+							"key": "q",
+							"value": "What is RAG?"
+						}
+					]
+				},
+				"description": "Query about Retrieval-Augmented Generation"
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8000",
+			"type": "string"
+		}
+	]
+}
